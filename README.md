@@ -1,4 +1,28 @@
+
+
 # KEYCLOAK PROJECT
+
+- [KEYCLOAK PROJECT](#keycloak-project)
+  - [ENVIRONMENT SETUP](#environment-setup)
+    - [0. Prerequisite](#0-prerequisite)
+    - [1. Install Vagrant](#1-install-vagrant)
+    - [2. Provision VM using Vagrant with microk8s cluster](#2-provision-vm-using-vagrant-with-microk8s-cluster)
+    - [3. Access VM](#3-access-vm)
+  - [RUNNING APPLICATION](#running-application)
+  - [ACCESSING APPLICATION](#accessing-application)
+  - [TESTING APPLICATION (not wokring with remote infinispan)](#testing-application-not-wokring-with-remote-infinispan)
+    - [1. Login into the app](#1-login-into-the-app)
+    - [2. Create realm](#2-create-realm)
+    - [3. Create user](#3-create-user)
+    - [4. Create client](#4-create-client)
+    - [5. Testing login](#5-testing-login)
+  - [REVERTING CHANGES](#reverting-changes)
+    - [Stopping application](#stopping-application)
+    - [Exit VM terminal](#exit-vm-terminal)
+    - [Stop VM](#stop-vm)
+    - [Delete VM](#delete-vm)
+  - [References:](#references)
+
 
 ## ENVIRONMENT SETUP
 
@@ -6,6 +30,10 @@ Microk8s cluster is used for deployment.
 Cluster is deployed using vagrant which will provision Virtual Machine with microk8s setup and required tools.
 Additionally during microk8s setup, ingress and hostpath storage plugins will be enabled.
 Ingress is used for accessing application, while hostpath storage for provisioning Persistent Volumes.
+
+### 0. Prerequisite
+
+Installed Virtual Box
 
 ### 1. Install Vagrant
 
@@ -16,7 +44,7 @@ https://developer.hashicorp.com/vagrant/downloads
 ### 2. Provision VM using Vagrant with microk8s cluster
 
 Run `vagrant up` command from the project root directory to provision VM with installed microk8s cluster. This process will take several minutes.
-IP address of the machine can be hardcoded or dynamically set. Default value is hardcoded in the Vagrantfile `config.vm.network "private_network", ip: "192.168.56.6"` This value is used for accessing ingress domain, and changing it requires updating ingress URL as well.
+IP address of the machine can be hardcoded or dynamically set. Default value is hardcoded in the Vagrantfile `config.vm.network "private_network", ip: "192.168.56.7"` This value is used for accessing ingress domain, and changing it requires updating ingress URL as well.
 
 ```bash
 # Confirm vagrant version
@@ -62,13 +90,13 @@ Application startup process is currently slow, so it is expected to take several
 ## ACCESSING APPLICATION
 
 Application can be accessed using Ingress resouce.
-If host ip in the Vagrant file was not changed (`config.vm.network "private_network", ip: "192.168.56.6"`) Keycloak should be accessible on `keycloak.192.168.56.6.nip.io` URL.
-Open **keycloak.192.168.56.6.nip.io** URL and accept Unsecure domain (current implementation does not use certificate) for SSL.
+If host ip in the Vagrant file was not changed (`config.vm.network "private_network", ip: "192.168.56.7"`) Keycloak should be accessible on `keycloak.192.168.56.7.nip.io` URL.
+Open **keycloak.192.168.56.7.nip.io** URL and accept Unsecure domain (current implementation does not use certificate) for SSL.
 
-## TESTING APPLICATION
+## TESTING APPLICATION (not wokring with remote infinispan)
 
 ### 1. Login into the app
-Click on `Administration Console` to access http://keycloak.192.168.56.6.nip.io/admin/ page and accept Security Warning.
+Click on `Administration Console` to access http://keycloak.192.168.56.7.nip.io/admin/ page and accept Security Warning.
 Sign-in using provisioned credentials username: `admin`, password `admin`.
 
 ### 2. Create realm
@@ -99,15 +127,15 @@ Open next URL.
 
 ```bash
 # Use this link as a template and update REALM_NAME and CLIENT_NAME
-https://www.keycloak.org/app/#url=http://keycloak.192.168.56.6.nip.io/&realm=REALM_NAME&client=CLIENT_NAME
+https://www.keycloak.org/app/#url=http://keycloak.192.168.56.7.nip.io/&realm=REALM_NAME&client=CLIENT_NAME
 
 # e.g.
-https://www.keycloak.org/app/#url=http://keycloak.192.168.56.6.nip.io/&realm=myrealm&client=myclient
+https://www.keycloak.org/app/#url=http://keycloak.192.168.56.7.nip.io/&realm=myrealm&client=myclient
 ```
 
 Try to login using user from step 3.
 
-## Reverting changes
+## REVERTING CHANGES
 
 ### Stopping application
 
@@ -130,8 +158,13 @@ or `r .` for shorthand command.
 ## References:
 
 https://www.keycloak.org/high-availability/connect-keycloak-to-external-infinispan
+
 https://www.keycloak.org/server/caching
+
 https://www.keycloak.org/server/all-config
+
 https://infinispan.org/docs/stable/titles/server/server.html#hot_rod
+
 https://docs.jboss.org/infinispan/9.2/pdf/server_guide.pdf
+
 https://infinispan.org/docs/stable/titles/configuring/configuring.html

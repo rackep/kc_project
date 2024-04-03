@@ -18,9 +18,10 @@ Vagrant.configure("2") do |config|
   config.vm.network "forwarded_port", guest: 16443, host: 16443
   config.vm.network "forwarded_port", guest: 10443, host: 10443
 
-  config.vm.network "private_network", ip: "192.168.56.6"
-  config.vm.synced_folder "k8s", "/home/vagrant/k8s", disabled: false, create: true
-  config.vm.synced_folder "apps", "/home/vagrant/apps", disabled: false, create: true
+  config.vm.network "private_network", ip: "192.168.56.7"
+  # config.vm.synced_folder "k8s", "/home/vagrant/k8s", disabled: false, create: true
+  config.vm.synced_folder "1_kc_db_infinispan_embedded", "/home/vagrant/1_kc_db_infinispan_embedded", disabled: false, create: true
+  config.vm.synced_folder "2_kc_db_infinispan_remote", "/home/vagrant/2_kc_db_infinispan_remote", disabled: false, create: true
   
   config.vm.box = "bento/ubuntu-22.04"
 

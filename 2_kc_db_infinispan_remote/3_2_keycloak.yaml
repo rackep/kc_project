@@ -64,7 +64,7 @@ spec:
         - name: KC_PROXY
           value: "edge"
         - name: KC_HOSTNAME
-          value: keycloak.192.168.56.6.nip.io  
+          value: keycloak.192.168.56.7.nip.io  
         - name: KC_HOSTNAME_STRICT_HTTPS
           value: 'false'
         - name: KC_DB
@@ -150,9 +150,9 @@ metadata:
 spec:
   tls:
     - hosts:
-        - keycloak.192.168.56.6.nip.io
+        - keycloak.192.168.56.7.nip.io
   rules:
-    - host: keycloak.192.168.56.6.nip.io
+    - host: keycloak.192.168.56.7.nip.io
       http:
         paths:
           - path: /
