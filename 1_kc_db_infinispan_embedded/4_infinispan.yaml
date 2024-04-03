@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: infinispan-data
+  namespace: keycloak
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: {requests: {storage: 1Gi}}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: infinispan
+  labels:
+    app: infinispan
+  namespace: keycloak
+spec:
+  selector:
+    app: infinispan
+  ports:
+    - name: infinispan
+      port: 11222
+      targetPort: 11222
+  type: ClusterIP
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: infinispan
+  labels:
+    app: infinispan
+  namespace: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: infinispan
+  template:
+    metadata:
+      labels:
+        app: infinispan
+    spec:
+      containers:
+      - name: infinispan
+        image: infinispan/server:15.0
+        env:
+        - name: USER
+          value: 'admin'
+        - name: PASS
+          value: 'admin'
+        - name: GROUP
+          value: 'admin'
+        ports:
+          - name: infinispan
+            containerPort: 11222
+        volumeMounts:
+          - name: infinispan-data
+            mountPath: /opt/infinispan/server/data
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "1"
+          requests:
+            memory: "256Mi"
+            cpu: "0.2"
+
+      volumes:
+      - name: infinispan-data
+        persistentVolumeClaim:
+          claimName: infinispan-data
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: infinispan
+  namespace: keycloak
+spec:
+  tls:
+    - hosts:
+        - infinispan.192.168.56.6.nip.io
+  rules:
+    - host: infinispan.192.168.56.6.nip.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: infinispan
+                port:
+                  name: infinispan                 
